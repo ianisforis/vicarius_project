@@ -1,7 +1,6 @@
 package com.example.vicariusproject.controller;
 
 import com.example.vicariusproject.service.ElasticSearchService;
-import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,18 +15,18 @@ public class ElasticsearchController {
 
     private final ElasticSearchService elasticSearchService;
 
-    @PostMapping("/createIndex/{indexName}")
-    public String createIndex(@PathVariable String indexName) throws IOException {
+    @PostMapping("/create-index/{indexName}")
+    public String createIndex(@PathVariable String indexName) {
         return elasticSearchService.createIndex(indexName);
     }
 
     @PostMapping("/add-document/{indexName}")
-    public String addDocument(@PathVariable String indexName) throws IOException {
+    public String addDocument(@PathVariable String indexName) {
         return elasticSearchService.addDocument(indexName);
     }
 
-    @GetMapping("/getDocument/{indexName}/{id}")
-    public String getDocumentById(@PathVariable String indexName, @PathVariable String id) throws IOException {
+    @GetMapping("/get-document/{indexName}/{id}")
+    public String getDocumentById(@PathVariable String indexName, @PathVariable String id) {
         return elasticSearchService.getDocumentById(indexName, id);
     }
 }
