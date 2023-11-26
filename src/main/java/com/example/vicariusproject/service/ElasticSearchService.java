@@ -5,6 +5,7 @@ import co.elastic.clients.elasticsearch.core.GetResponse;
 import co.elastic.clients.elasticsearch.core.IndexResponse;
 import co.elastic.clients.elasticsearch.indices.CreateIndexResponse;
 import com.example.vicariusproject.model.dto.Document;
+import com.example.vicariusproject.model.request.DocumentRequest;
 import java.io.IOException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -29,33 +30,33 @@ public class ElasticSearchService {
                             .index(indexName)
                     );
         } catch (IOException e) {
-            log.error("Index creation {} was interrupted", indexName);
+            log.error("Index {} creation was interrupted", indexName, e);
             return "Index creation " + indexName + " was interrupted";
         }
 
-        log.info ("Index created name {} id {}", indexName, response.index());
+        log.info ("Index created, name: {} id: {}", indexName, response.index());
         return "Index created name: " + indexName + " id: " + response.index();
     }
 
-    public String addDocument(String indexName) {
+    public String addDocument(String indexName, DocumentRequest documentRequest) {
         IndexResponse response;
         try {
             response = esClient
                     .index(i -> i
                             .index(indexName)
-                            .document(new Document("Story", "Once upon a time")));
+                            .document(new Document(documentRequest.getTitle(), documentRequest.getText())));
 
             // Refresh the index to make the document available for search immediately
             esClient
                     .indices()
                     .refresh(refresh -> refresh.index(indexName));
         } catch (IOException e) {
-            log.error("Adding document to index {} was interrupted", indexName);
+            log.error("Adding document to index {} was interrupted", indexName, e);
             return "Adding document to index " + indexName + " was interrupted";
         }
 
         log.info ("Document: id {} added to index {} ", response.id(), indexName);
-        return "Document: id " + response.id() + " added to index " + indexName;
+        return "Document: id " + response.id() + " was added to index " + indexName;
     }
 
     public String getDocumentById(String indexName, String id) {
@@ -66,7 +67,7 @@ public class ElasticSearchService {
                     .index(indexName)
                     .id(id), Document.class);
         } catch (IOException e) {
-            log.error("Document or index was corrupted", e);
+            log.error("Getting document process was interrupted", e);
             return "Document or index was corrupted";
         }
 
@@ -80,6 +81,6 @@ public class ElasticSearchService {
             }
         }
 
-        return "No document by this id " + id;
+        return "No document found by this id " + id;
     }
 }
